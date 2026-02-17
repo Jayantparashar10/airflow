@@ -3074,7 +3074,9 @@ def test_when_dag_run_has_partition_and_downstreams_listening_then_tables_popula
 
     with dag_maker(
         dag_id="asset_event_listener",
-        schedule=PartitionedAssetTimetable(assets=asset, partition_mapper=IdentityMapper()),
+        schedule=PartitionedAssetTimetable(
+            assets=Asset(name="hello"), default_partition_mapper=IdentityMapper()
+        ),
         session=session,
     ):
         EmptyOperator(task_id="hi")
@@ -3182,3 +3184,29 @@ def test_clear_task_instances_recalculates_dagrun_queued_deadlines(dag_maker, se
             assert deadline.deadline_time == expected_time
 
     assert recalculated_count == 2
+
+
+def test_get_dagrun_loaded_but_none_returns_dagrun(dag_maker, session):
+    """
+    Test that `get_dagrun()` fetches `DagRun` from DB when the `dag_run`
+    relationship is marked as loaded but unset (`None`).
+    """
+    from sqlalchemy.orm.attributes import set_committed_value
+
+    from airflow.operators.empty import EmptyOperator
+    from airflow.utils.state import State
+
+    with dag_maker(dag_id="test_get_dagrun_loaded_none"):
+        EmptyOperator(task_id="test_task")
+
+    dr = dag_maker.create_dagrun(state=State.RUNNING)
+
+    ti = dr.get_task_instance(task_id="test_task", session=session)
+
+    # Simulate relationship being loaded but unset
+    set_committed_value(ti, "dag_run", None)
+
+    dr_from_ti = ti.get_dagrun(session=session)
+
+    assert dr_from_ti is not None
+    assert dr_from_ti == dr
