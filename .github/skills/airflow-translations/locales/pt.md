@@ -1,12 +1,13 @@
 # Portuguese (pt) Translation Agent Skill
 
-**Locale code:** `pt`
+**Locale code:** `pt`  
+**Preferred variant:** Mix of pt-BR / pt-PT as visible in existing files (Brazilian spelling often preferred, but some European forms like "Secção" appear)
 
 This file contains locale-specific guidelines so AI translation agents produce new Portuguese strings that stay 100% consistent with the existing translations in:
 
 `airflow-core/src/airflow/ui/public/i18n/locales/pt/*.json`
 
-## 1. Core Airflow Terminology (global – sync with SKILL.md when available)
+## 1. Core Airflow Terminology
 
 - Keep these terms **in English unchanged** (case-sensitive):
   - Dag / Dags
@@ -61,6 +62,10 @@ This file contains locale-specific guidelines so AI translation agents produce n
 
 **DON'T:**
 - Translate core terms listed in section 1
+- Use inconsistent gender (e.g. "Execução de Dag" instead of "Execução do Dag")
 - Invent new vocabulary when equivalent already exists
 - Translate hotkeys, code references, or file paths
 
+---
+
+**Version:** 1.0 – based directly on current `pt/` JSON files (Feb 2026)
